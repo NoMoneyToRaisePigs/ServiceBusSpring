@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  targetNamespace="reset://schemas/codegen/wildcardsystem.xsd" xmlns="reset://schemas/codegen/wildcardsystem.xsd"  attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="Properties">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="Property">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required" />
+          <xs:attribute name="type" type="xs:string" use="required" />
+          <xs:attribute name="default" type="xs:string" use="optional" />
+          <xs:attribute name="editor" type="xs:string" use="optional" />
+          <xs:attribute name="caption" type="xs:string" use="optional" />
+          <xs:attribute name="isEnum" type="xs:boolean" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="WildCardSystemRule">
+    <xs:complexType>
+      <xs:sequence>
+
+        <xs:element name="Description" type="xs:string" />
+
+        <xs:element name="Criteria">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Properties" type="Properties"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Results">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Properties" type="Properties"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+      </xs:sequence>
+      
+      <xs:attribute name="name" type="xs:string" use="required" />
+      
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

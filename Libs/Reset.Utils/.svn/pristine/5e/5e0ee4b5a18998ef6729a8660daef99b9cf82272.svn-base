@@ -1,0 +1,79 @@
+﻿<%@ CodeTemplate Language="VB" TargetLanguage="Text" Description="Creates WildCard Classes" Debug="True" OutputType="None" CompilerVersion="v4" %>
+<%@ Register Name="WildCardTemplate" Template="WildCardTemplate.cst" %>
+<%@ Register Name="WildCardSql" Template="WildCardSql.cst" %>
+<%@ Register Name="UserCode" Template="UserCode.cst" %>
+<%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Xml.Serialization" %>
+<%@ Property Name="Namespace" Type="System.String" Description="Namespace to use" %>
+<%@ Property Name="XmlFolder" Type="System.String" Description="Location of .xml files" %>
+<%@ Property Name="CodeFolder" Type="System.String" Description=".vb files" %>
+<%@ Property Name="Which" Type="System.String"  Optional="False" Description="DATA for the data layer, UI for the gui, SQL for the sql." %>
+
+<script runat="template">
+Public Sub Generate()      
+	for each filename as string in Directory.GetFiles(XmlFolder, "*.xml")
+        debug.Print(filename)
+        dim template as WildCardTemplate = Me.Create(of WildCardTemplate)
+        dim sqlTemplate as WildCardSql = Me.Create(Of WildCardSql)
+   
+        using sr As New StreamReader(filename)
+            Dim x As New XmlSerializer(GetType(WildCardSystemRule))
+            dim wcs as WildCardSystemRule = CType(x.Deserialize(sr), WildCardSystemRule)    
+
+			template.MyNameSpace = [Namespace]
+            template.MyClassName = wcs.Name
+            template.MyAccess = "Public"
+			template.WildCardSystemRule = wcs            
+
+            if Which = "DATA" then   
+				dim name as string = String.Format("{0}", wcs.name)                
+
+                dim userFile as string = Path.Combine(CodeFolder, String.Format("{0}.vb", name))
+
+                if not IO.File.Exists(userFile) then
+                    Debug.Print(userFile)
+                    dim user as UserCode = Me.Create(of UserCode)
+                    user.MyNameSpace = [Namespace]
+                    user.MyClassName = wcs.Name
+                    user.MyAccess = "Public"
+                    user.RenderToFile(userFile, false)
+                end if
+                
+                dim genFile as string = Path.Combine(CodeFolder, name & ".generated.vb")
+                template.RenderToFile(genFile, userFile, true)
+                debug.Print(genFile)
+                
+            elseif Which = "UI" then
+				dim name as string = String.Format("{0}Editor", wcs.name)
+                dim userFile as string = Path.Combine(CodeFolder, name & ".vb")
+            
+                if not IO.File.Exists(userFile) then
+                    Debug.Print(userFile)
+                    dim user as UserCode = Me.Create(of UserCode)
+                    user.MyNameSpace = [Namespace]
+                    user.MyClassName = name
+                    user.MyAccess = "Public"
+                    user.MyInherits = "AbstractWildCardSystemEditor"
+                    user.MyContent = "Public Sub New()" & vbcrlf & vbtab & vbtab & vbtab & "MyBase.New(New " & wcs.name & ".RuleBinder)" & vblf & "End Sub" & vblf
+                    user.MyImports = "Imports Reset.Utils.WildCardSystem" & vbcrlf & "Imports Reset.UI.WildCardSystem"
+                    user.RenderToFile(userFile, false)                                        
+                end if
+
+    		elseif Which = "SQL" then
+				sqlTemplate.WildCardSystemRule = wcs
+				
+				dim genFile as string = Path.Combine(CodeFolder, wcs.name & ".sql")
+                sqlTemplate.RenderToFile(genFile,  true)
+                debug.Print(genFile)
+
+			else
+				throw new NotImplementedException(which)
+            end if
+        end using          
+	next
+    
+End Sub
+
+</script>
+Generating WildCard Classes
+<% Generate() %>

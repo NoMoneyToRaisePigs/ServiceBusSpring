@@ -1,0 +1,20 @@
+﻿<%@ CodeTemplate Language="VB" TargetLanguage="Text" Debug="True"     CompilerVersion="v3.5"  %>
+<%@ Property Name="MyNameSpace" Type="System.String"  %>
+<%@ Property Name="MyClassName" Type="System.String"  %>
+<%@ Property Name="MyInherits" Type="System.String" Optional="True" Default="" %>
+<%@ Property Name="MyAccess" Type="System.String" %>
+<%@ Property Name="MyContent" Type="System.String" Optional="True" Default="" %>
+<%@ Property Name="MyImports" Type="System.String" Optional="True" Default="" %>
+
+<%= MyImports %>
+
+Namespace <%= MyNameSpace %>
+    
+    <%= MyAccess %> Partial Class <%= MyClassName %>
+        <% if MyInherits <> "" %> Inherits <%=MyInherits%> <% end if%>
+
+        <%= MyContent %>
+
+    End Class
+    
+End Namespace

@@ -1,0 +1,32 @@
+﻿<objects xmlns="http://www.springframework.net"
+         xmlns:nms="http://www.springframework.net/nms">
+
+  <!-- this file configures the objects we need -->
+
+  <!-- Grab the standard stuff and definitions -->
+  <import resource="assembly://Reset.ServiceBus/Reset.ServiceBus.BaseService/xml"/>
+
+  <object id="StatusRequestsListener" parent="CommonConfig_ListenerContainer">
+    <property name="PubSubDomain" value="true"/>
+    <property name="DestinationName" value="${Destinations.StatusRequestResponseTopic}"/>
+    <property name="MessageListener">
+      <object parent="CommonConfig_Listener">
+        <property name="MessageConverter.TypeMapper" ref="Me"/>
+      </object>
+    </property>
+  </object>
+
+  <!-- this is the template for sending the messages -->
+  <object  id="StatusResponseEndpoint" parent="CommonConfig_Sender">
+    <property name="DefaultDestinationName" value ="${Destinations.StatusRequestResponseTopic}"/>
+    <property name="PubSubDomain" value="true"/>
+  </object>
+
+  <object id="CancellationListener" parent="CommonConfig_ServerSideCancellationListener">
+    <property name="DestinationName" value="${Destinations.CancellationTopic}"/>
+    <property name="MessageListener.MessageConverter.TypeMapper" ref="Me"/>
+  </object>
+
+</objects>
+
+

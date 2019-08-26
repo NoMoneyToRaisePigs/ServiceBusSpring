@@ -1,0 +1,86 @@
+﻿<%@ Template Language="VB" TargetLanguage="Text" Debug="False" %>
+<%@ XmlProperty Name="TargetFile" Optional="False" Description="XML file to iterate." %>
+<%@ Assembly Name="System.Xml" %>
+<%@ Import Namespace="System.Xml" %>
+
+Imports Reset.UI.Icons
+
+Namespace Icons
+
+''' <summary>
+''' This static class keeps images and icons centrally in Shield. Every image has 2 sizes: 16x16 and 24x24.
+'''
+''' !!!AUTO GENERATED - DO NOT MODIFY DIRECTLY!!!!
+'''
+''' To add new images:
+'''    1. Add the image files under Reset.UI.Icons.Bitmap
+'''    2. Add them into the project resources
+'''    3. Add them into Icon.xml
+'''    4. Regenerate Icons.csp - this will regenerate this source file
+'''
+''' DO NOT forget to update wiki page after adding new images:
+'''    http://buildserver/shield/wiki/UI/Icon
+''' </summary>
+''' <remarks></remarks>
+	Public Class IconFactory
+
+	    Private Class Icon
+	        Implements IIcon
+
+	        private readonly _name As String
+	        private readonly _x16 As System.Drawing.Bitmap
+	        private readonly _x24 As System.Drawing.Bitmap
+
+			Public Sub New(name as string, x16 as System.Drawing.Bitmap, x24 as System.Drawing.Bitmap)
+				_name = name
+				_x16 = x16
+				_x24 = x24
+			End Sub
+			
+	        public ReadOnly Property Name As String Implements IIcon.Name
+	            Get
+	                Return _name
+	            End Get
+	        End Property
+
+	        public ReadOnly Property X16 As System.Drawing.Bitmap Implements IIcon.X16
+	            Get
+	                Return _x16
+	            End Get
+	        End Property		
+
+	        public ReadOnly Property X16Icon As System.Drawing.Icon Implements IIcon.X16Icon
+	            Get
+	                Return GetIcon(X16)
+	            End Get
+	        End Property	
+			
+	        public ReadOnly Property X24 As System.Drawing.Bitmap Implements IIcon.X24
+	            Get
+	                Return _x24
+	            End Get
+	        End Property
+			
+	        public ReadOnly Property X24Icon As System.Drawing.Icon Implements IIcon.X24Icon
+	            Get
+	                Return GetIcon(X24)
+	            End Get
+	        End Property			
+	
+	    End Class
+
+
+		 <% Dim currNode = TargetFile.DocumentElement.ChildNodes
+			dim t as Integer
+			For t = 0 To currNode.Count - 1  %>
+			
+			Public Shared ReadOnly Property  <%= currNode(t).Name %> As IIcon
+				Get
+	            	Return New Icon(<%= currNode(t).ChildNodes(0).InnerText %> , <%= currNode(t).ChildNodes(1).InnerText %>,<%= currNode(t).ChildNodes(2).InnerText %>)
+	        	End Get
+			End Property
+			<% Next t %> 	
+
+	End Class
+	
+End Namespace

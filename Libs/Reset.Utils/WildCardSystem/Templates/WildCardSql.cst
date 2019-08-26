@@ -1,0 +1,19 @@
+﻿<%@ Template Language="VB" TargetLanguage="T-SQL" Description="Create Views based off of the WildCardSystems" %>
+<%@ XmlProperty Name="WildCardSystemRule" Schema="..\codegen.wildcardsystem.xsd"  %>
+
+<% Dim allProperties = WildCardSystemRule.Criteria.Properties.Union(WildCardSystemRule.Results.Properties).ToList() %>
+
+/*********************************************************************************************************
+ * AUTO GENERATED. DO NOT MODIFY OR YOUR CHANGES WILL BE OVERWRITTEN!                                    *
+ *********************************************************************************************************/
+
+CREATE VIEW [dbo].[vw<%= WildCardSystemRule.Name %>] AS
+SELECT
+<% for each prop as PropertiesProperty in allProperties %>
+       CAST(i.[Data] AS XML).value('(<%= WildCardSystemRule.Name %>/@<%= prop.name%>)[1]', 'varchar(max)') AS <%= prop.name%>,
+<% next %>
+       i.*  
+FROM dbo.WildCardSystemItem i INNER JOIN enum.WildCardSystem t ON i.WildCardSystem = t.WildCardSystem 
+WHERE t.Name='<%= WildCardSystemRule.Name %>'
+
+GO
